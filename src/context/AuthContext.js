@@ -3,25 +3,32 @@ import { GoogleAuthProvider, signInWithPopup, signInWithRedirect, SignOut, onAut
 import { auth } from '../backend/firebase';
 
 
-// Vytvořte kontext s výchozí hodnotou
+// Vytvoření kontextu s výchozí hodnotou
 const AuthContext = createContext()
 
 export const AuthContextProvider = ({children}) => {
+  // Globální stav pro uchování aktuálního uživatele
   const [user, setUser] = useState({})
 
+  // Funkce pro přihlášení pomocí google
   const googleSignIn = ()  => {
     const provider = new GoogleAuthProvider();
     signInWithRedirect(auth,provider)
   }
 
+  // Funkce pro odhlášení
   const logOut = () => {
     signOut(auth)
   }
+
+  // Sledování stavu autentizace
   useEffect(() => {
     const unsubscrible = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser)
       console.log("User", currentUser);
     })
+
+    // Zrušení sledování když kompoennata není aktivní
     return () => {
       unsubscrible()
     }
@@ -34,6 +41,7 @@ export const AuthContextProvider = ({children}) => {
   )
 }
 
+// Export kontextu
 export const UserAuth = () => {
   return useContext(AuthContext)
 }
